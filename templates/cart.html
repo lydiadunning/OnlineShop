@@ -13,5 +13,12 @@
             </a>
         {% endfor %}
     </div>
+    <div>
+        {% if items %}
+            <button>Checkout</button>
+        {% else %}
+            <button disabled>Checkout</button>
+        {% endif %}
+    </div>
 </body>
 </html>

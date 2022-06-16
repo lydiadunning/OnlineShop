@@ -6,6 +6,8 @@
 6. Note any deficiencies that need to be fixed or implemented now
 - Remove url from database
 - Add url generation to server
+- Add cart links -everywhere-
+- Add checkout link to cart
 7. Quickly review stripe(?) process and dependencies to confirm validity of next steps
 8. Implement sessions for shopping cart
 9. Implement placeholder checkout process - maximize compatibility with stripe for easy integration

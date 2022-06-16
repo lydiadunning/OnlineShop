@@ -13,7 +13,6 @@ def make_placeholder_data(quantity):
         price = "".join(choices(string.digits, k=randrange(1, 3))) + "." + "".join(choices(string.digits, k=2))
         description = "".join(choices(chars, k=randrange(100, 200)))
         new_item = Item(name=name,
-                        url=quote_plus(name),
                         image="static/placeholder.png",
                         price=price,
                         description=description,
@@ -22,7 +21,6 @@ def make_placeholder_data(quantity):
         db.session.add(new_item)
         db.session.commit()
         print(f"name: {name}")
-        print(f"url: {quote_plus(name)}")
         print(f"image: static/placeholder.png")
         print(f"price: ${price}")
         print(f"description: {description}")

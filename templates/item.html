@@ -6,6 +6,7 @@
 
 </head>
 <body>
+    <a href="{{ url_for('cart') }}"><h3>Shopping Cart</h3></a>
     <div class="item_info">
         <img src="{{ item.image }}">
         <h3>{{ item.name }}</h3>
@@ -14,13 +15,20 @@
     </div>
     <div class="buy_item">
         <h4>{{ amount_in_cart }}</h4>
-        <form action="{{ url_for('add', item_id=item.id) }}" method="post" class="add-to-cart">
-            <button>Add to Cart</button>
-        </form>
-        <form action="{{ url_for('remove', item_id=item.id) }}" method="post" class="add-to-cart">
-            <button>Remove from Cart</button>
-        </form>
-
+        {% if item.available > 0 %}
+            <form action="{{ url_for('add', item_id=item.id) }}" method="post" class="add-to-cart">
+                <button>Add to Cart</button>
+            </form>
+        {% else %}
+            <button disabled>Add to Cart</button>
+        {% endif %}
+        {% if amount_in_cart > 0 %}
+            <form action="{{ url_for('remove', item_id=item.id) }}" method="post" class="add-to-cart">
+                <button>Remove from Cart</button>
+            </form>
+        {% else %}
+            <button disabled>Remove from Cart</button>
+        {% endif %}
     </div>
 
 </body>

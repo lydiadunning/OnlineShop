@@ -1,5 +1,7 @@
 from flask import Flask, render_template, redirect, request, url_for
 from flask_sqlalchemy import SQLAlchemy
+from urllib.parse import quote_plus, unquote_plus
+
 
 # I don't fully understand why this web app requires a login.
 
@@ -14,7 +16,7 @@ class Item(db.Model):
     # A single item for sale
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(20), unique=True, nullable=False)
-    url = db.Column(db.String(20), unique=True, nullable=False)
+    # url = db.Column(db.String(20), unique=True, nullable=False)
     image = db.Column(db.String(20), nullable=False)
     price = db.Column(db.String(10), nullable=False)
     description = db.Column(db.String(200))
@@ -29,12 +31,18 @@ cart_dict = {}
 
 @app.route('/')
 def home():
-    return render_template('item_list.html', items=Item.query.all())
+    items = Item.query.all()
+    for item in items:
+        item.url = quote_plus(item.name)
+    return render_template('item_list.html', items=items)
 
 
 @app.route('/<name_url>', methods=['GET', 'POST'])
 def item(name_url):
-    item_to_show = Item.query.filter_by(url=name_url).first()
+    name = unquote_plus(name_url)
+    item_to_show = Item.query.filter_by(name=name).first()
+    print(name)
+    print(f"name: {name} + {item_to_show.name}")
     if item_to_show.id in cart_dict.keys():
         amount_in_cart = cart_dict[item_to_show.id]
     else:
@@ -48,6 +56,7 @@ def item(name_url):
 @app.route('/add/<item_id>', methods=['GET', 'POST'])
 def add(item_id):
     new_item = Item.query.get(item_id)
+    new_item_url = quote_plus(new_item.name)
     if new_item.available:
         if int(item_id) in cart_dict.keys():
             cart_dict[int(item_id)] += 1
@@ -60,13 +69,14 @@ def add(item_id):
     else:
         # replace this print statement
         print("Out of stock")
-    return redirect(url_for("item", name_url=new_item.url))
+    return redirect(url_for("item", name_url=new_item_url))
 
 
 @app.route('/remove/<item_id>', methods=['GET', 'POST'])
 def remove(item_id):
     id = int(item_id)
     item_to_remove = Item.query.get(id)
+    item_to_remove_url = quote_plus(item_to_remove.name)
     if id in cart_dict.keys():
         if cart_dict[id] > 1:
             cart_dict[id] -= 1
@@ -76,14 +86,19 @@ def remove(item_id):
             del cart_dict[id]
             item_to_remove.available += 1
             db.session.commit()
-    return redirect(url_for("item", name_url=item_to_remove.url))
+    return redirect(url_for("item", name_url=item_to_remove_url))
 
 
 @app.route('/cart')
 def cart():
+    print(cart_dict.keys())
     item_list = []
     for item_id in cart_dict.keys():
-        item_list.append(Item.query.get(item_id))
+        item = Item.query.get(item_id)
+        # item_dict[quote_plus(item.name)] = item
+        item.url = quote_plus(item.name)
+        item_list.append(item)
+        # item_list.append(Item.query.get(item_id))
     return render_template('cart.html', cart_dict=cart_dict, items=item_list)
 
 
