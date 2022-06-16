@@ -1,0 +1,19 @@
+1. Chart out processes, sketch pages needed
+2. Rough flask outline
+3. Rough html pages
+4. Implement sqlalchemy ORM
+5. Get it up and running - ugly working first draft
+6. Note any deficiencies that need to be fixed or implemented now
+- Remove url from database
+- Add url generation to server
+7. Quickly review stripe(?) process and dependencies to confirm validity of next steps
+8. Implement sessions for shopping cart
+9. Implement placeholder checkout process - maximize compatibility with stripe for easy integration
+10. Test shopping cart behavior
+11. Add styling.
+12. Implement stripe(?)
+
+
+I could add:
+* Login to view purchased items
+* Admin login to add items for sale, update stock available

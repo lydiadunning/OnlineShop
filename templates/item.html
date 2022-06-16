@@ -9,10 +9,18 @@
     <div class="item_info">
         <img src="{{ item.image }}">
         <h3>{{ item.name }}</h3>
+        <h3>${{ item.price }}</h3>
         <p>{{ item.description }}</p>
     </div>
     <div class="buy_item">
-        <button>Add to Cart</button>
+        <h4>{{ amount_in_cart }}</h4>
+        <form action="{{ url_for('add', item_id=item.id) }}" method="post" class="add-to-cart">
+            <button>Add to Cart</button>
+        </form>
+        <form action="{{ url_for('remove', item_id=item.id) }}" method="post" class="add-to-cart">
+            <button>Remove from Cart</button>
+        </form>
+
     </div>
 
 </body>

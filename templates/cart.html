@@ -6,8 +6,11 @@
 </head>
 <body>
     <div>
-        {% for item in cart_dict %}
-
+        {% for item in items %}
+            <a href="{{url_for('item', name_url=item.url)}}">
+                <img src="static/placeholder.png">
+                <h3>{{ item.name}} ||| {{ cart_dict[item.id] }}</h3>
+            </a>
         {% endfor %}
     </div>
 </body>
