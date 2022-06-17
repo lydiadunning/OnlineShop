@@ -26,11 +26,17 @@ def make_placeholder_data(quantity):
         print(f"description: {description}")
         print(f"available: {randrange(0, 5)}")
 
-# make_placeholder_data(10)
 
 def fill_inventory(amount = 10):
     for item in Item.query.all():
         item.available += amount
         db.session.commit()
 
-fill_inventory()
+
+def show_availability():
+    for item in Item.query.all():
+        print(f"{item.name}: {item.available}")
+
+# make_placeholder_data(10)
+# fill_inventory()
+show_availability()
