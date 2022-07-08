@@ -12,12 +12,27 @@
 8. Implement sessions for shopping cart
 - This is deceptively complex, since the session dictionary-like object converts variables into json data.
     I think I'm over thinking my changes, though.
+    -Got it!
 9. Implement placeholder checkout process - maximize compatibility with stripe for easy integration
+- understand stripe price ids
+- Looks like generating and storing product data in stripe might be the easiest approach to implement and understand.
+- Not sure whether I ought to duplicate this data elsewhere in my app.
+- actually, redesigning for stripe looks unnecessary.
+- Currently using placeholders, may create a carmen sandiego inspired monument black market.
 10. Test shopping cart behavior
-11. Add styling.
+11. Add styling?
 12. Implement stripe(?)
 
 
 I could add:
 * Login to view purchased items
 * Admin login to add items for sale, update stock available
+
+* Consider including web store. This would require:
+    * Finish web store functionality - happy path
+    * Upload or create a dataset
+        - I could create a few datasets and styles
+        and allow the user to tab between them
+    * Add simple styling
+    * Do a little testing
+    * Finish the assignment by adding users

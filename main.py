@@ -1,10 +1,21 @@
+import string
+
 from flask import Flask, render_template, redirect, request, url_for, session
 from flask_sqlalchemy import SQLAlchemy
 from urllib.parse import quote_plus, unquote_plus
+import os
+from dotenv import load_dotenv
+import stripe
 
+load_dotenv()
+# This is a public sample test API key.
+# Don’t submit any personally identifiable information in requests made with this key.
+# Sign in to see your own test API key embedded in code samples.
+stripe.api_key = os.getenv('STRIPE_SECRET_KEY')
 
 # I don't fully understand why this web app requires a login.
 # I guess I can mimic other sites
+
 
 app = Flask(__name__)
 app.secret_key = "secret key"
@@ -19,28 +30,61 @@ class Item(db.Model):
     # A single item for sale
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(20), unique=True, nullable=False)
-    # url = db.Column(db.String(20), unique=True, nullable=False)
     image = db.Column(db.String(20), nullable=False)
     price = db.Column(db.String(10), nullable=False)
     description = db.Column(db.String(200))
     available = db.Column(db.Integer)
+    in_a_cart = db.Column(db.Integer)
+    product_id = db.Column(db.String(20), unique=True, nullable=True)
 
 db.create_all()
 
+
+def remove_from_cart(item_id, canceled_or_purchased, quantity=1):
+    item_to_remove = Item.query.get(item_id)
+    print('remove_from_cart: ' + str(session['cart_dict']))
+    if item_id in session['cart_dict'].keys():
+        if session['cart_dict'][item_id] > quantity:
+            session['cart_dict'][item_id] -= quantity
+            session.modified = True
+            if canceled_or_purchased == 'canceled':
+                item_to_remove.available += quantity
+                item_to_remove.in_a_cart -= quantity
+            elif canceled_or_purchased == 'purchased':
+                item_to_remove.in_a_cart -= quantity
+            db.session.commit()
+        elif session['cart_dict'][item_id] == quantity:
+            del session['cart_dict'][item_id]
+            print("cart_dict if cart value == quantity " + str(session['cart_dict']))
+            if canceled_or_purchased == 'canceled':
+                item_to_remove.available += quantity
+                item_to_remove.in_a_cart -= quantity
+            elif canceled_or_purchased == 'purchased':
+                item_to_remove.in_a_cart -= quantity
+            db.session.commit()
+    # returns the name of the item to avoid unnecessary database calls.
+    return session['cart_dict']
+
+def clear_cart(cancelled_or_purchased):
+    for item_id, item_quantity in session['cart_dict'].items():
+         remove_from_cart(item_id, cancelled_or_purchased, item_quantity)
+
+
 @app.route('/')
 def home():
+    if 'cart_dict' not in session:
+        session['cart_dict'] = {}
     items = Item.query.all()
     for item in items:
         item.url = quote_plus(item.name)
-    return render_template('item_list.html', items=items)
+    print('home: ' + str(session['cart_dict']))
+    return render_template('item_list.html', items=items, cart_dict=session['cart_dict'])
 
 
-@app.route('/<name_url>', methods=['GET', 'POST'])
+@app.route('/item/<name_url>', methods=['GET', 'POST'])
 def item(name_url):
     name = unquote_plus(name_url)
     item_to_show = Item.query.filter_by(name=name).first()
-    # print(name)
-    # print(f"name: {name} + {item_to_show.name}")
     if 'cart_dict' not in session:
         session['cart_dict'] = {}
         session.modified = True
@@ -54,8 +98,8 @@ def item(name_url):
                            amount_in_cart=amount_in_cart)
 
 
-@app.route('/add/<item_id>', methods=['GET', 'POST'])
-def add(item_id):
+@app.route('/add/<source>/<item_id>', methods=['GET', 'POST'])
+def add(source, item_id):
     new_item = Item.query.get(item_id)
     new_item_url = quote_plus(new_item.name)
     if new_item.available:
@@ -63,40 +107,31 @@ def add(item_id):
             session['cart_dict'][item_id] += + 1
             session.modified = True
             new_item.available -= 1
+            new_item.in_a_cart += 1
             db.session.commit()
         else:
             session['cart_dict'][item_id] = 1
             session.modified = True
             new_item.available -= 1
+            new_item.in_a_cart += 1
             db.session.commit()
     else:
         # replace this print statement
         print("Out of stock")
-    return redirect(url_for("item", name_url=new_item_url))
+    return redirect(url_for(source, name_url=new_item_url))
 
 
-@app.route('/remove/<item_id>', methods=['GET', 'POST'])
-def remove(item_id):
-    item_to_remove = Item.query.get(item_id)
-    item_to_remove_url = quote_plus(item_to_remove.name)
-    if item_id in session['cart_dict'].keys():
-        if session['cart_dict'][item_id] > 1:
-            session['cart_dict'][item_id] -= 1
-            session.modified = True
-            item_to_remove.available += 1
-            db.session.commit()
-        else:
-            del session['cart_dict'][item_id]
-            session.modified = True
-            item_to_remove.available += 1
-            db.session.commit()
-    return redirect(url_for("item", name_url=item_to_remove_url))
+@app.route('/remove/<source>/<item_id>', methods=['GET', 'POST'])
+def remove(source, item_id):
+    item_to_remove_url = quote_plus(Item.query.get(item_id).name)
+    session['cart_dict'] = remove_from_cart(item_id, 'canceled', 1)
+    print('source: ' + source )
+    print('session before redirect: ' + str(session['cart_dict']))
+    return redirect(url_for(source, name_url=item_to_remove_url))
 
 
 @app.route('/cart')
 def cart():
-    if 'cart_dict' not in session:
-        session['cart_dict'] = {}
     item_list = []
     for item_id in session['cart_dict']:
         item = Item.query.get(item_id)
@@ -105,23 +140,42 @@ def cart():
         item_list.append(item)
         # item_list.append(Item.query.get(item_id))
         print(session['cart_dict'])
+        print(item.id)
+        print(type(item.id))
+
     return render_template('cart.html', cart_dict=session['cart_dict'], items=item_list)
 
-
-@app.route('/checkout', methods=['GET', 'POST'])
-def checkout():
-    if request.method == 'POST':
-        pass
-        # checkout process
-        # checkout process goes here
-        return redirect()
-    return render_template('checkout.html')
+def price_fix(price: string) -> int:
+    return int(price.replace('.', ''))
 
 
-@app.route('/checkout_complete')
-def checkout_complete():
-    return render_template('checkout_complete.html')
+# Lifted from stripe documentation: https://stripe.com/docs/checkout/quickstart
+@app.route('/checkout', methods=['POST'])
+def create_checkout_session():
+    try:
+        checkout_session = stripe.checkout.Session.create(
+            line_items=[
+                {'price': stripe.Product.retrieve(Item.query.get(item_id).product_id).default_price,
+                 'quantity': session['cart_dict'][item_id]
+                 } for item_id in session['cart_dict']
+            ],
+            mode='payment',
+            success_url=f'{request.base_url}/success',
+            cancel_url=f'{request.base_url}/cancel'
+        )
+    except Exception as e:
+        print(str(e))
+        return str(e)
 
+    return redirect(checkout_session.url, code=303)
+
+@app.route('/checkout/success')
+def success():
+    return render_template('success.html')
+
+@app.route('/checkout/cancel')
+def cancel():
+    return redirect(url_for('cart'))
 
 if __name__ == '__main__':
     app.run(debug=True)

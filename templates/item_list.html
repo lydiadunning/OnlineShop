@@ -3,18 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <link rel="stylesheet" href="static/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Neuton:wght@300&family=Passion+One&family=Scope+One&display=swap" rel="stylesheet">
 </head>
 <body>
-    <a href="{{ url_for('cart') }}"><h3>Shopping Cart</h3></a>
-    <h1>For Sale:</h1>
-    <div>
+    <div class="box">
+        <a href="{{ url_for('cart') }}"><h3>Shopping Cart &#128722</h3></a>
+        <h1>For Sale:</h1>
+    </div>
+    <div class="container" id="item-list">
         {% for item in items %}
-            <div class="item">
+            <div class="item, box">
                 <a href="{{ url_for('item', name_url=item.url) }}">
-                    <img src="{{ item.image }}">
+                    <img src="{{ item.image }}"/>
                     <h3>{{ item.name }}</h3>
-                    <p>${{ item.price }}</p>
                 </a>
+                <div class="container-wide">
+                    <p>${{ item.price }}</p>
+                    <div class="container" id="cart_interaction">
+                        {% if item.id|string in cart_dict %}
+                            <form action="{{ url_for('remove', source='home', item_id=item.id) }}" method="post" class="add-to-cart">
+                                <button>-</button>
+                            </form>
+                        {% else %}
+                            <button disabled>-</button>
+                        {% endif %}
+                        {% if item.id|string in cart_dict %}
+                            <p>{{ cart_dict[item.id|string] }} in cart</p>
+                        {% else %}
+                            <p>0 in cart</p>
+                        {% endif %}
+                        {% if item.available > 0 %}
+                            <form action="{{ url_for('add', source='home', item_id=item.id) }}" method="post" class="add-to-cart">
+                                <button>+</button>
+                            </form>
+                        {% else %}
+                            <button disabled>+</button>
+                        {% endif %}
+                    </div>
+                </div>
             </div>
         {% endfor %}
     </div>

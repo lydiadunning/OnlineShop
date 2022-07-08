@@ -3,22 +3,58 @@
 <head>
     <meta charset="UTF-8">
     <title>Shopping Cart</title>
+    <link rel="stylesheet" href="static/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Neuton:wght@200&family=Passion+One&family=Scope+One&display=swap" rel="stylesheet">
+
 </head>
 <body>
-    <div>
-        {% for item in items %}
-            <a href="{{url_for('item', name_url=item.url)}}">
-                <img src="static/placeholder.png">
-                <h3>{{ item.name}} ||| {{ cart_dict[item.id] }}</h3>
-            </a>
-        {% endfor %}
+    <div class="box">
+        <a href="{{ url_for('home') }}"><h3>Back to Shop</h3></a>
+        <h2>&#128722 Shopping Cart:</h2>
     </div>
-    <div>
+    <div class="box" id="cart">
+        {% if items %}
+            {% for item in items %}
+                <div class="box container">
+                    <a href="{{url_for('item', name_url=item.url)}}">
+                        <img src="static/placeholder.png">
+                    </a>
+                    <a href="{{url_for('item', name_url=item.url)}}">
+                        <h3>{{ item.name}}</h3>
+                    </a>
+                    <div class="container" id="cart_interaction">
+                        <form action="{{ url_for('remove', source='cart', item_id=item.id) }}" method="post" class="add-to-cart">
+                            <button>-</button>
+                        </form>
+                        {% if item.id|string in cart_dict %}
+                            <p>{{ cart_dict[item.id|string] }} in cart</p>
+                        {% else %}
+                            <p>0 in cart</p>
+                        {% endif %}
+                        {% if item.available > 0 %}
+                            <form action="{{ url_for('add', source='cart', item_id=item.id) }}" method="post" class="add-to-cart">
+                                <button>+</button>
+                            </form>
+                        {% else %}
+                            <button disabled>+</button>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>Empty</p>
+        {% endif %}
+    </div>
+    <div class="box">
+        <form method="POST" action="{{ url_for('create_checkout_session') }}">
         {% if items %}
             <button>Checkout</button>
         {% else %}
             <button disabled>Checkout</button>
         {% endif %}
+        </form>
     </div>
 </body>
 </html>
