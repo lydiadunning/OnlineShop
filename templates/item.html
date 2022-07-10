@@ -3,26 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <title>{{ item.name }}</title>
-    <link rel="stylesheet" href="static/style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Neuton:wght@200&family=Passion+One&family=Scope+One&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="static/style.css">
 </head>
 <body>
-    <div class="box">
-        <a href="{{ url_for('cart') }}"><h3>Shopping Cart &#128722</h3></a>
+    <nav class="container-wide">
+        <h1 class="name">{{ item.name }}</h1>
         <a href="{{ url_for('home') }}"><h3>Back to Shop</h3></a>
-    </div>
+        <a href="{{ url_for('cart') }}"><h3>Shopping Cart &#128722 ${{ cart_total }}</h3></a>
+    </nav>
+
 
 
     <div class="box" id="item-view">
-        <h1 class="name">{{ item.name }}</h1>
-        <p class="box item-description">{{ item.description }}</p>
+<!--        <h1 class="name">{{ item.name }}</h1>-->
+        <h1 id="name">{{ item.name }}</h1>
+        <p class="item-description">{{ item.description }}</p>
         <h4 class="amount">{{ amount_in_cart }} in cart </h4>
         <h3 class="price">${{ item.price }}</h3>
-        {% if amount_in_cart %}
-            <h3 class="total">${{ item.price|float * amount_in_cart }}</h3>
-        {% endif %}
         <div class="buy-item">
             {% if item.available != 0 %}
                 <form action="{{ url_for('add', source='item', item_id=item.id) }}" method="post" class="add-to-cart">
@@ -40,7 +40,6 @@
                 </form>
             {% endif %}
         </div>
-        <a href="{{ url_for('home') }}" class="back"><h3>Back to Shop</h3></a>
         <img src="{{ item.image }}"/>
     </div>
 

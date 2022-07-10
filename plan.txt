@@ -20,7 +20,7 @@
 - actually, redesigning for stripe looks unnecessary.
 - Currently using placeholders, may create a carmen sandiego inspired monument black market.
 10. Test shopping cart behavior
-11. Add styling?
+11. Add styling
 12. Implement stripe(?)
 
 
@@ -36,3 +36,11 @@ I could add:
     * Add simple styling
     * Do a little testing
     * Finish the assignment by adding users
+
+- landmarks - api with description data - wikipedia?
+- airs of the world - api with location description data or custom description - images of locations
+    - images of bags of air - paper bag for newly released green packaging
+- haunted cereals
+- or I could just be normal
+    - fruit
+
