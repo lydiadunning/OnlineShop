@@ -4,6 +4,26 @@ body {
     margin: 0;
 }
 
+h1 {
+    font-family: 'Open Sans', sans-serif;
+}
+
+h2 {
+    font-family: 'Open Sans', sans-serif;
+}
+
+h3 {
+    font-family: 'Open Sans', sans-serif;
+}
+
+h4 {
+    font-family: 'Open Sans', sans-serif;
+}
+
+p {
+    font-family: 'Open Sans', sans-serif;
+}
+
 .box {
     background: White;
     border: solid WhiteSmoke;
@@ -55,14 +75,16 @@ nav {
     margin: 0 0.5rem;
 }
 
-/* #cart img {
+#cart img {
     width: 30%;
 }
-*/
+
 
 #cart_interaction button {
-    width: 1.7em;
-    height: 1.7em;
+    width: 2em;
+    height: 2em;
+    text-align: center;
+    font-family: 'Open Sans', sans-serif;
 }
 
 
@@ -83,6 +105,7 @@ nav {
 }
 
 /*
+
 @media (max-width: 1530px) {
     #item-view {
         display: grid;
@@ -97,6 +120,33 @@ nav {
     }
 }*/
 
+#checkout {
+  position: -webkit-sticky;
+  position: sticky;
+  top: 5em;
+  bottom: 20em;
+  /* bring your own prefixes */
+/*  transform: translate(-50%, -50%);*/
+    width: fit-content(20em);
+
+    border: solid WhiteSmoke;
+/*
+    position: -webkit-sticky;
+    position: sticky;
+    top: 40%;
+    bottom: 40vh
+
+    align-self: start;
+
+
+*/
+
+}
+
+#checkout button {
+    font-family: 'Scope One', sans-serif;
+}
+
 #item-view > img {
     grid-area: image;
     width: 100%;
@@ -104,7 +154,6 @@ nav {
 
 .buy-item {
     grid-area: buy;
-    padding: 0 1.5rem;
     display: flex;
     flex-direction: column;
     align-self: start;
@@ -113,21 +162,28 @@ nav {
 .buy-item button {
     width: 100%;
     border-radius: 0;
-    padding: .3em 0;
+    padding: .3em .3em;
     font-family: 'Scope One', sans-serif;
+    border: solid silver;
+}
+
+.buy-item button:hover {
+    border-color: Black;
 }
 
 
 #name {
     grid-area: name;
-    font-family: 'Neuton', serif;
     margin: 0;
 }
 
+.name {
+    font-family: 'Scope One', serif;
+}
 
 .price {
     grid-area: price;
-    font-family: 'Passion One', sans-serif;
+    font-family: 'Open Sans', sans-serif;
 }
 
 .amount {
@@ -151,4 +207,6 @@ nav {
 .item:hover {
     border-color: Black;
 }
+
+
 

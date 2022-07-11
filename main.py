@@ -136,7 +136,7 @@ def add(source, item_id):
         else:
             # replace this print statement
             print("Out of stock")
-        return redirect(url_for(source, name_url=new_item_url))
+        return redirect(url_for(source, name_url=new_item_url, _anchor=item_id))
     else:
         abort(404)
 
@@ -146,7 +146,7 @@ def remove(source, item_id):
     if source and item_to_remove_url:
         print('source: ' + source )
         print('session before redirect: ' + str(session['cart_dict']))
-        return redirect(url_for(source, name_url=item_to_remove_url))
+        return redirect(url_for(source, name_url=item_to_remove_url, _anchor=item_id))
     abort(404)
 
 @app.route('/cart')
@@ -179,7 +179,7 @@ def create_checkout_session():
                  } for item_id in session['cart_dict']
             ],
             mode='payment',
-            success_url=f'{request.base_url}/success',
+            success_url=f'{request.root_url}success',
             cancel_url=f'{request.base_url}/cancel'
         )
     except Exception as e:

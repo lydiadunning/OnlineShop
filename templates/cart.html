@@ -6,58 +6,61 @@
     <link rel="stylesheet" href="static/style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Neuton:wght@200&family=Passion+One&family=Scope+One&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Neuton:wght@200&family=Open+Sans&family=Passion+One&family=Scope+One&display=swap" rel="stylesheet">
 </head>
 <body>
     <nav class="container-wide">
         <h2>&#128722 Shopping Cart:</h2>
-        <a href="{{ url_for('home') }}"><h3>Back to Shop</h3></a>
+        <a href="{{ url_for('home') }}" class="name"><h3>Back to Shop</h3></a>
         <div></div>
     </nav>
 
-    <div class="box" id="cart">
-        {% if items %}
-            {% for item in items %}
-                <div class="box container item cart-item">
-                    <a href="{{url_for('item', name_url=item.url)}}">
-                        <img src="static/placeholder.png">
-                    </a>
-                    <a href="{{url_for('item', name_url=item.url)}}">
-                        <h3>{{ item.name}}</h3>
-                    </a>
-                    <h4>${{ item.price }}</h4>
-                    <div class="container" id="cart_interaction">
-                        <form action="{{ url_for('remove', source='cart', item_id=item.id) }}" method="post" class="add-to-cart">
-                            <button>-</button>
-                        </form>
-                        {% if item.id|string in cart_dict %}
-                            <p>{{ cart_dict[item.id|string] }} in cart</p>
-                        {% else %}
-                            <p>0 in cart</p>
-                        {% endif %}
-                        {% if item.available > 0 %}
-                            <form action="{{ url_for('add', source='cart', item_id=item.id) }}" method="post" class="add-to-cart">
-                                <button>+</button>
+    <div class="container">
+        <div  id="cart">
+            {% if items %}
+                {% for item in items %}
+                    <div class="box container item cart-item">
+                        <a href="{{url_for('item', name_url=item.url)}}">
+                            <img src="static/placeholder.png">
+                        </a>
+                        <a href="{{url_for('item', name_url=item.url)}}">
+                            <h3 class="name">{{ item.name}}</h3>
+                        </a>
+                        <h4 class="price">${{ item.price }}</h4>
+                        <div class="container" id="cart_interaction">
+                            <form action="{{ url_for('remove', source='cart', item_id=item.id) }}" method="post" class="add-to-cart">
+                                <button>-</button>
                             </form>
-                        {% else %}
-                            <button disabled>+</button>
-                        {% endif %}
+                            {% if item.id|string in cart_dict %}
+                                <p>{{ cart_dict[item.id|string] }} in cart</p>
+                            {% else %}
+                                <p>0 in cart</p>
+                            {% endif %}
+                            {% if item.available > 0 %}
+                                <form action="{{ url_for('add', source='cart', item_id=item.id) }}" method="post" class="add-to-cart">
+                                    <button>+</button>
+                                </form>
+                            {% else %}
+                                <button disabled>+</button>
+                            {% endif %}
+                        </div>
                     </div>
-                </div>
-            {% endfor %}
-        {% else %}
-            <p>Empty</p>
-        {% endif %}
-    </div>
-    <div class="box">
-        <h2>Cart Total: ${{ cart_total }}</h2>
-        <form method="POST" action="{{ url_for('create_checkout_session') }}">
-        {% if items %}
-            <button>Checkout</button>
-        {% else %}
-            <button disabled>Checkout</button>
-        {% endif %}
-        </form>
+                {% endfor %}
+            {% else %}
+                <p>Empty</p>
+            {% endif %}
+        </div>
+        <div class="box" id="checkout">
+            <h2>Cart Total: ${{ cart_total }}</h2>
+            <form method="POST" action="{{ url_for('create_checkout_session') }}">
+            {% if items %}
+                <button>Checkout</button>
+            {% else %}
+                <button disabled>Checkout</button>
+            {% endif %}
+            </form>
+        </div>
+
     </div>
 </body>
 </html>
